@@ -1,26 +1,28 @@
 [project]
 name = "src"
 version = "0.1.0"
-description = "Add your description here"
-readme = "README.md"
 requires-python = ">=3.12"
 dependencies = [
-    "matplotlib",
-    "pandas",
-    "scikit-learn",
-    "seaborn",
-]
+    "matplotlib>=3.10.7",
+    "pandas>=2.3.3",
+    "scikit-learn>=1.7.2",
+    "seaborn>=0.13.2",
 
-[dependency-groups]
-mac = [
+    # torch declared once
     "torch",
     "torchvision",
 ]
-gpu = [
-    { name = "torch", index = "pytorch-cu121" },
-    { name = "torchvision", index = "pytorch-cu121" },
-]
 
 [tool.uv.sources]
-pytorch-cu121 = { index-url = "https://download.pytorch.org/whl/cu121" }
+# macOS CPU-only wheels from PyPI
+torch = [
+    { index = "pypi", marker = "sys_platform == 'darwin'" },
 
+    # Linux GPU → CUDA 12.1 wheels
+    { index = "pytorch-cu121", marker = "sys_platform != 'darwin'" }
+]
+
+# Index definitions
+[[tool.uv.index]]
+name = "pytorch-cu121"
+url  = "https://download.pytorch.org/whl/cu121"
