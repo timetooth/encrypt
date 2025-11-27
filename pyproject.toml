@@ -7,22 +7,28 @@ dependencies = [
     "pandas>=2.3.3",
     "scikit-learn>=1.7.2",
     "seaborn>=0.13.2",
-
-    # torch declared once
     "torch",
     "torchvision",
 ]
 
 [tool.uv.sources]
-# macOS CPU-only wheels from PyPI
 torch = [
+    # macOS → CPU torch from PyPI
     { index = "pypi", marker = "sys_platform == 'darwin'" },
 
-    # Linux GPU → CUDA 12.1 wheels
-    { index = "pytorch-cu121", marker = "sys_platform != 'darwin'" }
+    # Linux → CUDA 12.1 torch
+    { index = "pytorch-cu121", marker = "sys_platform != 'darwin'" },
 ]
 
-# Index definitions
+torchvision = [
+    { index = "pypi", marker = "sys_platform == 'darwin'" },
+    { index = "pytorch-cu121", marker = "sys_platform != 'darwin'" },
+]
+
+[[tool.uv.index]]
+name = "pypi"
+url  = "https://pypi.org/simple"
+
 [[tool.uv.index]]
 name = "pytorch-cu121"
 url  = "https://download.pytorch.org/whl/cu121"
