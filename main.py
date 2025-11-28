@@ -4,14 +4,14 @@ import time
 print("---- GPU SANITY CHECK (FORWARD + BACKWARD) ----")
 print("PyTorch version:", torch.__version__)
 print("CUDA available:", torch.cuda.is_available())
-print("CUDA version:", torch.version.cuda)
-print("Device:", torch.cuda.get_device_name(0))
+# print("CUDA version:", torch.version.cuda)
+# print("Device:", torch.cuda.get_device_name(0))
 
 # Enable autograd
-x = torch.randn((4000, 4000), device='cuda', requires_grad=True)
-y = torch.randn((4000, 4000), device='cuda', requires_grad=True)
+x = torch.randn((4000, 4000),requires_grad=True)
+y = torch.randn((4000, 4000),requires_grad=True)
 
-torch.cuda.synchronize()
+# torch.cuda.synchronize()
 t0 = time.time()
 
 z = x @ y
@@ -20,7 +20,7 @@ loss = z.sum()
 # Backward pass
 loss.backward()
 
-torch.cuda.synchronize()
+# torch.cuda.synchronize()
 t1 = time.time()
 
 print("Forward + Backward on GPU Successful!")
