@@ -110,10 +110,16 @@ class Unet(nn.Module):
     
 
 if __name__ == "__main__":
-    model = Unet(in_channels=1, out_channels=64)
-    x = torch.randn((34,1,512,512))
+    import time
+    device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+
+    model = Unet(in_channels=1, out_channels=64).to(device)
+    x = torch.randn((34,1,512,512)).to(device)
     print(f"Input shape: {x.shape}")
+    start = time.time()
     y = model(x)
+    end = time.time()
+    print(f"Inference time for batch of 34: {end-start:.4f} seconds")
     print(f"Output shape: {y.shape}")
 
 
