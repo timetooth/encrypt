@@ -31,7 +31,7 @@ from models.unet_model import UNet
 from dataloader import MimicDataset
 
 
-EPOCHS = 100
+EPOCHS = 10
 LEARNING_RATE = 1e-4
 BATCH_SIZE = 192
 
@@ -231,7 +231,7 @@ def train(train_dataloader,
                 print(f"Saved sample reconstructions to {save_path}")
 
         # --------- CHECKPOINTING ---------
-        if checkpoint_path and (epoch + 1) % 10 == 0:
+        if checkpoint_path:
             # save "last"
             torch.save(
                 {
