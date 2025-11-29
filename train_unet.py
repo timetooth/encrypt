@@ -69,7 +69,11 @@ def get_dataloader(dataset_root="./dataset/mimic-cxr-dataset",
     val_dataloader = DataLoader(val_dataset,
                                 batch_size=batch_size,
                                 shuffle=False,
-                                num_workers=num_workers)
+                                num_workers=num_workers,
+                                pin_memory=True,
+                                persistent_workers=True,
+                                prefetch_factor=2
+                                )
 
     return train_dataloader, val_dataloader
 
