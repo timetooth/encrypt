@@ -37,6 +37,14 @@ def get_args():
         default="",
         help="Path to save the output csv file with image paths",
     )
+    # NEW: train fraction (rest will be test)
+    parser.add_argument(
+        "--train_frac",
+        type=float,
+        default=0.8,
+        help="Fraction of data to use for training (rest is test)",
+    )
+
     return parser.parse_args()
 
 def get_image_paths(images_root, meta_df, position="PA"):
@@ -121,6 +129,9 @@ if __name__ == "__main__":
     if args.position not in ["PA", "AP", "LATERAL"]:
         raise Exception(f"Invalid position: {args.position}. Must be one of 'PA', 'AP', 'LATERAL'")
 
+    if not (0.0 < args.train_frac < 1.0): 
+        raise Exception(f"train_frac must be between 0 and 1, got {args.train_frac}")
+
     img_paths_df = make_data(
         dataset_root=args.dataset_root,
         images_root=args.images_root,
@@ -128,8 +139,36 @@ if __name__ == "__main__":
         position=args.position,
     )
 
+    if img_paths_df.empty:
+        raise Exception(f"No images found for position {args.position}")
+
+    # shuffle and split into train/test
+    img_paths_df = img_paths_df.sample(frac=1.0, random_state=42).reset_index(drop=True)
+
+    n_total = len(img_paths_df)
+    n_train = int(n_total * args.train_frac)
+    if n_train == 0 or n_train == n_total:
+        raise Exception(
+            f"train_frac={args.train_frac} leads to empty train or test split "
+            f"(n_total={n_total}, n_train={n_train}). Adjust train_frac."
+        )
+
+    train_df = img_paths_df.iloc[:n_train].copy()
+    test_df = img_paths_df.iloc[n_train:].copy()
+
     if args.output_csv == "":
         args.output_csv = os.path.join(args.dataset_root, f"image_paths_{args.position}.csv")
 
     img_paths_df.to_csv(args.output_csv, index=False)
-    print(f"Saved {len(img_paths_df)} rows to {args.output_csv}")
+    print(f"Saved {len(img_paths_df)} rows (full) to {args.output_csv}")
+
+    # also save train and test CSVs
+    base, ext = os.path.splitext(args.output_csv)
+    train_csv = base + "_train" + ext
+    test_csv = base + "_test" + ext
+
+    train_df.to_csv(train_csv, index=False)
+    test_df.to_csv(test_csv, index=False)
+
+    print(f"Saved {len(train_df)} train rows to {train_csv}")
+    print(f"Saved {len(test_df)} test rows to {test_csv}")

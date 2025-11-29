@@ -664,6 +664,19 @@ wheels = [
 ]
 
 [[package]]
+name = "piq"
+version = "0.8.0"
+source = { registry = "https://pypi.org/simple" }
+dependencies = [
+    { name = "torchvision", version = "0.20.1+cu121", source = { registry = "https://download.pytorch.org/whl/cu121" }, marker = "sys_platform != 'darwin'" },
+    { name = "torchvision", version = "0.24.1", source = { registry = "https://pypi.org/simple" }, marker = "sys_platform == 'darwin'" },
+]
+sdist = { url = "https://files.pythonhosted.org/packages/8a/ae/9274f8e3f216759311a460a896594f04aade8a9f1171c0a732cc613c3b21/piq-0.8.0.tar.gz", hash = "sha256:ea74938ce11845d63fed3185694cdf9641f85bd19718dc3394f8008811b847d4", size = 91316, upload_time = "2023-07-04T21:28:05.877Z" }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/71/49/e198c355bc01a1bb3aff5d41a8fe7c8a0502ad7a4063865d2c9dd270cb0f/piq-0.8.0-py3-none-any.whl", hash = "sha256:bad83f8e68bad6c09df09c2bdf50d1e8ccf5e852d7b64562317c27ed5eb63159", size = 106872, upload_time = "2023-07-04T21:28:03.532Z" },
+]
+
+[[package]]
 name = "pyparsing"
 version = "3.2.5"
 source = { registry = "https://pypi.org/simple" }
@@ -827,6 +840,7 @@ source = { virtual = "." }
 dependencies = [
     { name = "matplotlib" },
     { name = "pandas" },
+    { name = "piq" },
     { name = "scikit-learn" },
     { name = "seaborn" },
     { name = "torch", version = "2.5.1+cu121", source = { registry = "https://download.pytorch.org/whl/cu121" }, marker = "sys_platform != 'darwin'" },
@@ -839,6 +853,7 @@ dependencies = [
 requires-dist = [
     { name = "matplotlib", specifier = ">=3.10.7" },
     { name = "pandas", specifier = ">=2.3.3" },
+    { name = "piq", specifier = ">=0.8.0" },
     { name = "scikit-learn", specifier = ">=1.7.2" },
     { name = "seaborn", specifier = ">=0.13.2" },
     { name = "torch", marker = "sys_platform != 'darwin'", index = "https://download.pytorch.org/whl/cu121" },

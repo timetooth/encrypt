@@ -5,6 +5,7 @@ requires-python = ">=3.12"
 dependencies = [
     "matplotlib>=3.10.7",
     "pandas>=2.3.3",
+    "piq>=0.8.0",
     "scikit-learn>=1.7.2",
     "seaborn>=0.13.2",
     "torch",
