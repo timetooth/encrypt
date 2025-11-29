@@ -5,14 +5,14 @@ from PIL import Image
 from torch.utils.data import Dataset
 import torchvision.transforms as T
 
-def get_transform():
+def get_transform(h, w):
     return T.Compose([
-        T.Resize((512, 512)), # add a resize if required
+        T.Resize((h, w)), # add a resize if required
         T.ToTensor(),
     ])
 
 class MimicDataset(Dataset):
-    def __init__(self, df, transform=None):
+    def __init__(self, df, transform=None, h = 512, w = 512):
         super().__init__()
 
         if isinstance(df,str):
@@ -26,7 +26,7 @@ class MimicDataset(Dataset):
         else:
             raise Exception(f"Invalid type for dataframe: {type(df)}. It must be a file path or a pandas DataFrame.")
 
-        self.transform = transform if transform is not None else get_transform()        
+        self.transform = transform if transform is not None else get_transform(h,w)        
 
         if self.img_df.empty:
             raise Exception(f"Image dataframe is empty: {df}")
@@ -58,7 +58,7 @@ class MimicDataset(Dataset):
 if __name__ == "__main__":
     import torchvision.utils as vutils
     from torch.utils.data import DataLoader
-
+    
     dataset = MimicDataset("./dataset/mimic-cxr-dataset/image_paths_PA.csv")
     data = DataLoader(dataset, batch_size=5, shuffle=True, num_workers=2)
 
