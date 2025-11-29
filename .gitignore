@@ -11,3 +11,4 @@ wheels/
 dataset/
 datasets/
 *.ipynb
+results/
