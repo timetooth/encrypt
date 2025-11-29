@@ -134,7 +134,7 @@ def train(train_dataloader,
     print(f"Using device: {device}")
 
     # ----- init model & optimizer -----
-    model = UNet(in_channels=1, base_channels=initial_channels).to(device)
+    model = UNet(in_channels=1, out_channels=initial_channels).to(device)
     optimizer = Adam(model.parameters(), lr=learning_rate)
     start_epoch = 0
     best_val_loss = float('inf')
