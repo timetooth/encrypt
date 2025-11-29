@@ -27,7 +27,7 @@ import torch.nn.functional as F
 import pandas as pd
 from torchvision.utils import save_image
 
-from models.unet_model import UNet
+from models.unet_no_skip import UNet
 from dataloader import MimicDataset
 
 
