@@ -32,7 +32,7 @@ from dataloader import MimicDataset
 
 EPOCHS = 100
 LEARNING_RATE = 1e-4
-BATCH_SIZE = 32
+BATCH_SIZE = 192
 
 torch.backends.cudnn.benchmark = True
 
@@ -95,6 +95,7 @@ def get_args():
     parser.add_argument("--num_workers", type=int, default=4, help="Number of workers for data loading")
     parser.add_argument("--height", type=int, default=512, help="Height of input images")
     parser.add_argument("--width", type=int, default=512, help="Width of input images")
+    parser.add_argument("--initial_channels", type=int, default=64, help="Number of initial channels in U-Net")
     args = parser.parse_args()
     return args
 
@@ -124,13 +125,15 @@ def train(train_dataloader,
           learning_rate,
           checkpoint_path,
           writer,
-          results_dir):
+          results_dir,
+          initial_channels=64
+          ):
 
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
     print(f"Using device: {device}")
 
     # ----- init model & optimizer -----
-    model = UNet(in_channels=1, out_channels=1).to(device)
+    model = UNet(in_channels=1, out_channels=initial_channels).to(device)
     optimizer = Adam(model.parameters(), lr=learning_rate)
     start_epoch = 0
     best_val_loss = float('inf')
