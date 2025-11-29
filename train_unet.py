@@ -26,6 +26,7 @@ import torch.nn as nn
 import torch.nn.functional as F
 import pandas as pd
 from torchvision.utils import save_image
+import matplotlib.pyplot as plt  # <-- NEW: for saving graphs
 
 from models.unet_no_skip import UNet
 from dataloader import MimicDataset
@@ -260,14 +261,46 @@ def train(train_dataloader,
 
     # --------- SAVE METRICS CSV ---------
     metrics_path = os.path.join(results_dir, "metrics.csv")
+    epochs_list = list(range(start_epoch + 1, start_epoch + epochs + 1))
     df = pd.DataFrame({
-        "epoch": list(range(start_epoch + 1, start_epoch + epochs + 1)),
+        "epoch": epochs_list,
         "train_loss": train_losses,
         "val_loss": val_losses,
         "val_psnr": val_psnrs,
     })
     df.to_csv(metrics_path, index=False)
     print(f"Saved metrics CSV to {metrics_path}")
+
+    # --------- SAVE TRAINING GRAPHS ---------
+    graphs_dir = os.path.join(results_dir, "graphs")
+    os.makedirs(graphs_dir, exist_ok=True)
+
+    # Loss curves
+    plt.figure()
+    plt.plot(epochs_list, train_losses, label="Train Loss")
+    plt.plot(epochs_list, val_losses, label="Val Loss")
+    plt.xlabel("Epoch")
+    plt.ylabel("Loss")
+    plt.title("Train vs Val Loss")
+    plt.legend()
+    plt.grid(True)
+    loss_graph_path = os.path.join(graphs_dir, "loss_curve.png")
+    plt.savefig(loss_graph_path, bbox_inches="tight")
+    plt.close()
+    print(f"Saved loss curve to {loss_graph_path}")
+
+    # PSNR curve
+    plt.figure()
+    plt.plot(epochs_list, val_psnrs, label="Val PSNR")
+    plt.xlabel("Epoch")
+    plt.ylabel("PSNR (dB)")
+    plt.title("Validation PSNR")
+    plt.legend()
+    plt.grid(True)
+    psnr_graph_path = os.path.join(graphs_dir, "psnr_curve.png")
+    plt.savefig(psnr_graph_path, bbox_inches="tight")
+    plt.close()
+    print(f"Saved PSNR curve to {psnr_graph_path}")
 
 
 if __name__ == "__main__":
