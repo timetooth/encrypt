@@ -16,7 +16,7 @@ class DoubleConv(nn.Module):
     def forward(self,x):
         return self.net(x)
 
-class Unet(nn.Module):
+class UNet(nn.Module):
     def __init__(self, in_channels=1, out_channels=64):
         # 4 down folowed by maxpool -> bottleneck -> 4 up with convtranspose
         super().__init__()
@@ -114,7 +114,7 @@ if __name__ == "__main__":
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
     print(f"Using device: {device}")
 
-    model = Unet(in_channels=1, out_channels=64).to(device)
+    model = UNet(in_channels=1, out_channels=64).to(device)
     x = torch.randn((34,1,512,512)).to(device)
     print(f"Input shape: {x.shape}")
     start = time.time()

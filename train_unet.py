@@ -1,9 +1,9 @@
 """"
-python train_unet.py \
+uv run train_unet.py \
   --epochs 100 \
   --learning_rate 1e-4 \
   --dataset_root ./dataset/mimic-cxr-dataset \
-  --checkpoint_path "" \
+  --checkpoint_path "./results/checkpoints/last.pth" \
   --results ./results \
   --positions AP \
   --batch_size 32 \
