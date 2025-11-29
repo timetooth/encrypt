@@ -3,7 +3,7 @@ uv run train_unet.py \
   --epochs 100 \
   --learning_rate 1e-4 \
   --dataset_root ./dataset/mimic-cxr-dataset \
-  --checkpoint_path "./results/checkpoints/last.pth" \
+  --checkpoint_path "./results/checkpoints/best_model.pth" \
   --results ./results \
   --positions AP \
   --batch_size 32 \
@@ -227,7 +227,7 @@ def train(train_dataloader,
                 print(f"Saved sample reconstructions to {save_path}")
 
         # --------- CHECKPOINTING ---------
-        if checkpoint_path:
+        if checkpoint_path and (epoch + 1) % 10 == 0:
             # save "last"
             torch.save(
                 {
