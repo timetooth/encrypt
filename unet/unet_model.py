@@ -112,6 +112,7 @@ class Unet(nn.Module):
 if __name__ == "__main__":
     import time
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+    print(f"Using device: {device}")
 
     model = Unet(in_channels=1, out_channels=64).to(device)
     x = torch.randn((34,1,512,512)).to(device)
