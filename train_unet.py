@@ -34,6 +34,7 @@ EPOCHS = 100
 LEARNING_RATE = 1e-4
 BATCH_SIZE = 32
 
+torch.backends.cudnn.benchmark = True
 
 def get_dataloader(dataset_root="./dataset/mimic-cxr-dataset",
                    positions=("AP",),
@@ -60,6 +61,9 @@ def get_dataloader(dataset_root="./dataset/mimic-cxr-dataset",
     train_dataloader = DataLoader(train_dataset,
                                   batch_size=batch_size,
                                   shuffle=shuffle,
+                                  pin_memory=True,
+                                  prefetch_factor=2,
+                                  persistent_workers=True,
                                   num_workers=num_workers)
 
     val_dataloader = DataLoader(val_dataset,
