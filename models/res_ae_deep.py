@@ -35,9 +35,9 @@ class ResBlock(nn.Module):
         out = self.relu(out)
         return out
 
-class ResAE(nn.Module):
+class ResAEDeep(nn.Module):
     def __init__(self, in_channels, base_channels=64):
-        super(ResAE, self).__init__()
+        super(ResAEDeep, self).__init__()
 
         self.enc1 = nn.Sequential(
             ResBlock(in_channels, base_channels),
@@ -135,7 +135,7 @@ if __name__ == "__main__":
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
     print("Using device:", device)
 
-    model = ResAE(in_channels=1, base_channels=64).to(device)
+    model = ResAEDeep(in_channels=1, base_channels=64).to(device)
     x = torch.randn((2,1,512,512)).to(device)
     y = model(x)
     print(y.shape)

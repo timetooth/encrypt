@@ -29,7 +29,7 @@ from functools import partial
 from torchvision.utils import save_image
 import matplotlib.pyplot as plt
 
-from models.res_ae import ResAE
+from models.res_ae_deep import ResAEDeep
 from dataloader import MimicDataset
 
 
@@ -143,7 +143,8 @@ def train(train_dataloader,
     print(f"Using device: {device}")
 
     # ----- init model & optimizer -----
-    model = ResAE(in_channels=1, base_channels=base_channels).to(device)
+    model = ResAEDeep(in_channels=1, base_channels=base_channels).to(device)
+
     optimizer = Adam(model.parameters(), lr=learning_rate)
     start_epoch = 0
     best_val_loss = float('inf')
@@ -156,7 +157,8 @@ def train(train_dataloader,
     if model is None or optimizer is None:
         raise ValueError("Model or optimizer not initialized properly.")
 
-    criterion = partial(recon_loss, alpha=0.8, beta=0.2)
+    criterion = torch.nn.MSELoss()
+    # criterion = partial(recon_loss, alpha=0.8, beta=0.2)
 
     train_losses, val_losses, val_psnrs = [], [], []
 
