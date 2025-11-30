@@ -1,10 +1,10 @@
 """"
-uv run train_unet.py \
+uv run train_resae.py \
   --epochs 30 \
   --learning_rate 1e-4 \
   --dataset_root ./dataset/mimic-cxr-dataset \
-  --checkpoint_path "./results/unet_noskip/checkpoints/best_model.pth" \
-  --results ./results/unet_noskip \
+  --checkpoint_path "./results/res_ae/checkpoints/best_model.pth" \
+  --results ./results/res_ae \
   --positions AP \
   --batch_size 64 \
   --shuffle True \
@@ -28,8 +28,10 @@ import pandas as pd
 from torchvision.utils import save_image
 import matplotlib.pyplot as plt  # <-- NEW: for saving graphs
 
-from models.unet_no_skip import UNet
+from models.res_ae import ResAE
 from dataloader import MimicDataset
+
+from piq import ssim
 
 
 EPOCHS = 10
@@ -120,6 +122,10 @@ def compute_psnr(pred, target, eps=1e-8):
     psnr = 10.0 * torch.log10(1.0 / (mse + eps))
     return psnr.item()
 
+def recon_loss(pred, target, alpha=0.8, beta=0.2):
+    l1 = F.l1_loss(pred, target)
+    ssim_val = ssim(pred, target, data_range=1.0)
+    return alpha * l1 + beta * (1.0 - ssim_val)
 
 def train(train_dataloader,
           val_dataloader,
@@ -135,7 +141,7 @@ def train(train_dataloader,
     print(f"Using device: {device}")
 
     # ----- init model & optimizer -----
-    model = UNet(in_channels=1, base_channels=base_channels).to(device)
+    model = ResAE(in_channels=1, base_channels=base_channels).to(device)
     optimizer = Adam(model.parameters(), lr=learning_rate)
     start_epoch = 0
     best_val_loss = float('inf')
