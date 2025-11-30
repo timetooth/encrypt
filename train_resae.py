@@ -6,7 +6,7 @@ uv run train_resae.py \
   --checkpoint_path "./results/res_ae/checkpoints/best_model.pth" \
   --results ./results/res_ae \
   --positions AP \
-  --batch_size 64 \
+  --batch_size 32 \
   --shuffle True \
   --num_workers 4 \
   --height 512 \
