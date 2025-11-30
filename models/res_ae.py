@@ -14,13 +14,17 @@ class ResBlock(nn.Module):
 
         self.proj = None
         if in_channels != out_channels:
-            self.proj = nn.Conv2d(in_channels,out_channels, kernel_size=1)
+            self.proj = nn.Sequential(
+                nn.Conv2d(in_channels,out_channels, kernel_size=1),
+                nn.BatchNorm2d(out_channels)
+            )
         return 
     
     def forward(self, x):
         identity = x
         x = self.conv1(x)
         x = self.bn1(x)
+        x = self.relu(x)
         x = self.conv2(x)
         x = self.bn2(x)
 
@@ -103,7 +107,7 @@ class ResAE(nn.Module):
 if __name__ == "__main__":
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
     print("Using device:", device)
-    
+
     model = ResAE(in_channels=1, base_channels=64).to(device)
     x = torch.randn((2,1,512,512)).to(device)
     y = model(x)

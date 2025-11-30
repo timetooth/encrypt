@@ -26,7 +26,7 @@ import torch.nn as nn
 import torch.nn.functional as F
 import pandas as pd
 from torchvision.utils import save_image
-import matplotlib.pyplot as plt  # <-- NEW: for saving graphs
+import matplotlib.pyplot as plt
 
 from models.unet_no_skip import UNet
 from dataloader import MimicDataset

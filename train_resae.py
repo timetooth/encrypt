@@ -25,11 +25,13 @@ from sklearn.model_selection import train_test_split
 import torch.nn as nn
 import torch.nn.functional as F
 import pandas as pd
+from functools import partial
 from torchvision.utils import save_image
-import matplotlib.pyplot as plt  # <-- NEW: for saving graphs
+import matplotlib.pyplot as plt
 
 from models.res_ae import ResAE
 from dataloader import MimicDataset
+
 
 from piq import ssim
 
@@ -83,7 +85,7 @@ def get_dataloader(dataset_root="./dataset/mimic-cxr-dataset",
 
 
 def get_args():
-    parser = argparse.ArgumentParser(description="Train U-Net on MIMIC-CXR dataset")
+    parser = argparse.ArgumentParser(description="Train resAE on MIMIC-CXR dataset")
     parser.add_argument("--epochs", type=int, default=EPOCHS, help="Number of training epochs")
     parser.add_argument("--learning_rate", type=float, default=LEARNING_RATE, help="Learning rate for optimizer")
     parser.add_argument("--dataset_root", type=str, default="./dataset/mimic-cxr-dataset",
@@ -99,7 +101,7 @@ def get_args():
     parser.add_argument("--num_workers", type=int, default=4, help="Number of workers for data loading")
     parser.add_argument("--height", type=int, default=512, help="Height of input images")
     parser.add_argument("--width", type=int, default=512, help="Width of input images")
-    parser.add_argument("--base_channels", type=int, default=64, help="Number of initial channels in U-Net")
+    parser.add_argument("--base_channels", type=int, default=64, help="Number of initial channels in resAE")
     args = parser.parse_args()
     return args
 
@@ -154,7 +156,7 @@ def train(train_dataloader,
     if model is None or optimizer is None:
         raise ValueError("Model or optimizer not initialized properly.")
 
-    criterion = nn.MSELoss()
+    criterion = partial(recon_loss, alpha=0.8, beta=0.2)
 
     train_losses, val_losses, val_psnrs = [], [], []
 
