@@ -29,7 +29,7 @@ from functools import partial
 from torchvision.utils import save_image
 import matplotlib.pyplot as plt
 
-from models.res_ae_deep import ResAEDeep
+from models.res_se_xl import ResAutoencoderXLSE
 from dataloader import MimicDataset
 
 
@@ -143,7 +143,7 @@ def train(train_dataloader,
     print(f"Using device: {device}")
 
     # ----- init model & optimizer -----
-    model = ResAEDeep(in_channels=1, base_channels=base_channels).to(device)
+    model = ResAutoencoderXLSE(in_channels=1, base_channels=base_channels).to(device)
 
     optimizer = Adam(model.parameters(), lr=learning_rate)
     start_epoch = 0
