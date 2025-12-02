@@ -9,7 +9,7 @@ uv run train_resae.py \
   --batch_size 32 \
   --shuffle True \
   --num_workers 4 \
-  --height 512 \
+  --height 512 \q
   --width 512 \
   --base_channels 32
 """

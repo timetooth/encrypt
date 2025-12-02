@@ -1,10 +1,18 @@
 import torch
 from torch import nn
 
-
 class ResBlockSE(nn.Module):
+    """
+    Residual block with:
+      - 2x Conv-BN-Act
+      - Channel attention (SE)
+      - Spatial attention (CBAM-style)
+    Drop-in replacement for previous ResBlockSE.
+    """
     def __init__(self, in_channels, out_channels, reduction=16):
         super().__init__()
+
+        # ---- main conv path ----
         self.conv1 = nn.Conv2d(in_channels, out_channels, kernel_size=3,
                                padding=1, bias=False)
         self.bn1 = nn.BatchNorm2d(out_channels)
@@ -13,24 +21,31 @@ class ResBlockSE(nn.Module):
                                padding=1, bias=False)
         self.bn2 = nn.BatchNorm2d(out_channels)
 
-        self.act = nn.ReLU(inplace=True)
+        self.act = nn.SiLU(inplace=True)  # a bit nicer than ReLU sometimes
 
-        # Squeeze-and-Excitation
+        # ---- channel attention (SE) ----
         self.global_pool = nn.AdaptiveAvgPool2d(1)
         mid_channels = max(1, out_channels // reduction)
-        self.fc1 = nn.Conv2d(out_channels, mid_channels, kernel_size=1)
-        self.fc2 = nn.Conv2d(mid_channels, out_channels, kernel_size=1)
-        self.sigmoid = nn.Sigmoid()
 
-        # Projection if channels change
+        self.ca_fc1 = nn.Conv2d(out_channels, mid_channels, kernel_size=1, bias=True)
+        self.ca_fc2 = nn.Conv2d(mid_channels, out_channels, kernel_size=1, bias=True)
+        self.ca_sigmoid = nn.Sigmoid()
+
+        # ---- spatial attention ----
+        # We compute avg & max along channel dimension, concat -> [B, 2, H, W]
+        # then conv 7x7 -> spatial attention map
+        self.sa_conv = nn.Conv2d(2, 1, kernel_size=7, padding=3, bias=False)
+        self.sa_sigmoid = nn.Sigmoid()
+
+        # ---- projection for residual if channel mismatch ----
         self.proj = None
         if in_channels != out_channels:
-            self.proj = nn.Conv2d(in_channels, out_channels,
-                                  kernel_size=1, bias=False)
+            self.proj = nn.Conv2d(in_channels, out_channels, kernel_size=1, bias=False)
 
     def forward(self, x):
         identity = x
 
+        # main path
         out = self.conv1(x)
         out = self.bn1(out)
         out = self.act(out)
@@ -38,20 +53,31 @@ class ResBlockSE(nn.Module):
         out = self.conv2(out)
         out = self.bn2(out)
 
-        # SE attention
-        w = self.global_pool(out)
-        w = self.fc1(w)
+        # -------- Channel Attention (SE) --------
+        w = self.global_pool(out)               # [B, C, 1, 1]
+        w = self.ca_fc1(w)
         w = self.act(w)
-        w = self.fc2(w)
-        w = self.sigmoid(w)
-        out = out * w 
+        w = self.ca_fc2(w)
+        w = self.ca_sigmoid(w)                  # [B, C, 1, 1]
+        out = out * w                           # channel-wise reweighting
 
+        # -------- Spatial Attention --------
+        avg_map = torch.mean(out, dim=1, keepdim=True)        # [B, 1, H, W]
+        max_map, _ = torch.max(out, dim=1, keepdim=True)      # [B, 1, H, W]
+        sa_input = torch.cat([avg_map, max_map], dim=1)       # [B, 2, H, W]
+
+        s = self.sa_conv(sa_input)                            # [B, 1, H, W]
+        s = self.sa_sigmoid(s)
+        out = out * s                                         # spatial reweighting
+
+        # -------- Residual add --------
         if self.proj is not None:
             identity = self.proj(identity)
 
         out = out + identity
         out = self.act(out)
         return out
+
 
 class ResAutoencoderXLSE(nn.Module):
     """
