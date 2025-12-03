@@ -188,7 +188,7 @@ def train(train_dataloader,
         epoch_train_loss = running_loss / len(train_dataloader.dataset)
         train_losses.append(epoch_train_loss)
         writer.add_scalar("Loss/train_epoch", epoch_train_loss, epoch)
-        print(f"Epoch [{epoch+1}], Train Loss: {epoch_train_loss:.4f}")
+        print(f"Epoch [{epoch+1}], Train Loss: {epoch_train_loss:.6f} | ")
 
         # --------- VALIDATION ---------
         model.eval()
@@ -222,7 +222,7 @@ def train(train_dataloader,
         writer.add_scalar("Loss/val_epoch", epoch_val_loss, epoch)
         writer.add_scalar("PSNR/val_epoch", epoch_val_psnr, epoch)
 
-        print(f"Epoch [{epoch+1}], Val Loss: {epoch_val_loss:.4f}, Val PSNR: {epoch_val_psnr:.2f} dB")
+        print(f"Epoch [{epoch+1}], Val Loss: {epoch_val_loss:.6f}, Val PSNR: {epoch_val_psnr:.2f} dB | ")
 
         # --------- IMAGE LOGGING ---------
         if sample_imgs is not None and sample_recons is not None:
