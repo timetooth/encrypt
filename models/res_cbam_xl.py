@@ -16,7 +16,7 @@ class ChannelAttention(nn.Module):
     def forward(self, x):
         # x: [B, C, H, W]
         avg_out = torch.mean(x, dim=(2, 3), keepdim=True)         # [B, C, 1, 1]
-        max_out, _ = torch.max(x, dim=(2, 3), keepdim=True)       # [B, C, 1, 1]
+        max_out = torch.amax(x, dim=(2, 3), keepdim=True)       # [B, C, 1, 1]
 
         avg_mlp = self.mlp(avg_out)
         max_mlp = self.mlp(max_out)
