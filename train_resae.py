@@ -3,13 +3,13 @@ uv run train_resae.py \
   --epochs 30 \
   --learning_rate 1e-4 \
   --dataset_root ./dataset/mimic-cxr-dataset \
-  --checkpoint_path "./results/res_ae/checkpoints/best_model.pth" \
-  --results ./results/res_ae \
+  --checkpoint_path "./results/res_ae_cbam/checkpoints/best_model.pth" \
+  --results ./results/res_ae_cbam \
   --positions AP \
   --batch_size 32 \
   --shuffle True \
   --num_workers 4 \
-  --height 512 \q
+  --height 512 \
   --width 512 \
   --base_channels 32
 """
@@ -29,7 +29,7 @@ from functools import partial
 from torchvision.utils import save_image
 import matplotlib.pyplot as plt
 
-from models.res_se_xl import ResAutoencoderXLSE
+from models.res_cbam_xl import ResAutoencoderXLCBAM
 from dataloader import MimicDataset
 
 
@@ -143,7 +143,7 @@ def train(train_dataloader,
     print(f"Using device: {device}")
 
     # ----- init model & optimizer -----
-    model = ResAutoencoderXLSE(in_channels=1, base_channels=base_channels).to(device)
+    model = ResAutoencoderXLCBAM(in_channels=1, base_channels=base_channels).to(device)
 
     optimizer = Adam(model.parameters(), lr=learning_rate)
     start_epoch = 0
