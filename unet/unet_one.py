@@ -164,6 +164,3 @@ if __name__ == "__main__":
     end = time.time()
     print(f"Inference time for batch of 34: {end-start:.4f} seconds")
     print(f"Output shape: {y.shape}")
-
-
-        
